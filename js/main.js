@@ -15,4 +15,14 @@ window.onload = function() {
     squence = [];
   };
 
+  let pieceClickHandler = function(event) {
+    console.log(this.dataset.piece);
+  };
+
+  let pieces = document.getElementsByClassName('piece');
+
+  for(let i = 0; i < pieces.length; i++) {
+    pieces[i].addEventListener('click', pieceClickHandler, false);
+  }
+
 };
