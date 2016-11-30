@@ -3,13 +3,10 @@ window.onload = function() {
 
   let activeInterval = 1000;
 
-  /*
-  The sequences elements have a value of 1-4 representing pieces
-  */
-  //Game generated
+  let currentMove = 0;
+
+  //The sequences elements have a value of 1-4 representing pieces
   let simonSequence = [];
-  //User generated
-  let userSequence = [];
 
   let pieceElements = {
     1: document.getElementById('1'),
@@ -36,20 +33,20 @@ window.onload = function() {
     return new Promise((resolve) => setTimeout(resolve, interval));
   };
 
-  let displaySimonSequence = function(simonSequence) {
-    if(simonSequence.length !== 0) {
-      let currentPiece = simonSequence.pop(); //removes element/shortens array
+  let displaySimonSequence = function(sequence) {
+    sequence = sequence.slice(0);
+    if(sequence.length !== 0) {
+      let currentPiece = sequence.shift();
       pieceElements[currentPiece].classList.add('active');
       sleep(activeInterval).then(() => {
         pieceElements[currentPiece].classList.remove('active');
-        displaySimonSequence(simonSequence);
+        displaySimonSequence(sequence);
       });
     }
   };
 
-  let correctUserSequence = function() {
-    let currentMove = userSequence.length - 1;
-    if (userSequence[currentMove] === simonSequence[currentMove]) {
+  let correctMove = function(piece) {
+    if (piece === simonSequence[currentMove]) {
       return true;
     } else {
       return false;
@@ -58,15 +55,31 @@ window.onload = function() {
 
   let updateGame = function() {
     incrementSimonSequence();
-    displaySimonSequence();
+    displaySimonSequence(simonSequence);
+    currentMove = 0;
   };
 
   let pieceClickHandler = function(event) {
-    let thisPiece = this.id;
-    userSequence.push(thisPiece);
-    if (correctUserSequence) {
+    if (currentMove < simonSequence.length) {
+      let thisPiece = parseInt(this.id);
+      if (correctMove(thisPiece)) {
+        console.log('Correct move');
+        currentMove += 1;
+        if(currentMove === simonSequence.length) {
+          updateGame();
+        }
+      } else {
+        console.log('Game over');
+        //TODO restart game
+      }
+    } else {
       updateGame();
     }
+  };
+
+  let startGame = function() {
+    resetSimonSequence();
+    updateGame();
   };
 
   for (let i = 0; i < pieces.length; i++) {
@@ -74,7 +87,6 @@ window.onload = function() {
   }
 
   //Begin game
-  incrementSimonSequence();
-  displaySimonSequence(simonSequence);
+  startGame();
 
 };
