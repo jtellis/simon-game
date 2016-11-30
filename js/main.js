@@ -21,7 +21,7 @@ window.onload = function() {
   let pieces = document.getElementsByClassName('piece');
 
   let randomPiece = function() {
-    Math.floor((Math.random() * 4) + 1); //Generate rand num 1-4
+    return Math.floor((Math.random() * 4) + 1); //Generate rand num 1-4
   };
 
   let incrementSimonSequence = function() {
@@ -32,19 +32,24 @@ window.onload = function() {
     simonSequence = [];
   };
 
-  let displaySimonSequence = function() {
-    for(let piece in simonSequence) {
-      console.log(piece);
-      pieceElements[piece].classList.add('active');
-      setTimeout(function() {
-        pieceElements[piece].classList.remove('active');
-      }, activeInterval);
+  let sleep = function(interval) {
+    return new Promise((resolve) => setTimeout(resolve, interval));
+  };
+
+  let displaySimonSequence = function(simonSequence) {
+    if(simonSequence.length !== 0) {
+      let currentPiece = simonSequence.pop(); //removes element/shortens array
+      pieceElements[currentPiece].classList.add('active');
+      sleep(activeInterval).then(() => {
+        pieceElements[currentPiece].classList.remove('active');
+        displaySimonSequence(simonSequence);
+      });
     }
   };
 
   let correctUserSequence = function() {
     let currentMove = userSequence.length - 1;
-    if(userSequence[currentMove] === simonSequence[currentMove]) {
+    if (userSequence[currentMove] === simonSequence[currentMove]) {
       return true;
     } else {
       return false;
@@ -59,13 +64,17 @@ window.onload = function() {
   let pieceClickHandler = function(event) {
     let thisPiece = this.id;
     userSequence.push(thisPiece);
-    if(correctUserSequence) {
+    if (correctUserSequence) {
       updateGame();
     }
   };
 
-  for(let i = 0; i < pieces.length; i++) {
+  for (let i = 0; i < pieces.length; i++) {
     pieces[i].addEventListener('click', pieceClickHandler, false);
   }
+
+  //Begin game
+  incrementSimonSequence();
+  displaySimonSequence(simonSequence);
 
 };
