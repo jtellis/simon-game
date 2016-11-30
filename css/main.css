@@ -1,9 +1,35 @@
 .piece {
   height: 100px;
   width: 100px;
-  border: 1px dashed black;
+  border: 1px solid black;
+  margin: 5px;
+  opacity: .5;
+}
+
+.piece.red {
+  background: red;
+}
+.piece.green {
+  background: green;
+}
+.piece.blue {
+  background: blue;
+}
+.piece.yellow {
+  background: yellow;
 }
 
 .piece.active {
-  border: 1px solid black;
+  animation-name: glow;
+  animation-duration: .25s;
+  animation-fill-mode: forwards;
+}
+
+@keyframes glow {
+  from {
+    opacity: .75;
+  }
+  to {
+    opacity: 1;
+  }
 }

@@ -40,7 +40,9 @@ window.onload = function() {
       pieceElements[currentPiece].classList.add('active');
       sleep(activeInterval).then(() => {
         pieceElements[currentPiece].classList.remove('active');
-        displaySimonSequence(sequence);
+        sleep(100).then(() => {
+          displaySimonSequence(sequence);
+        });
       });
     }
   };
