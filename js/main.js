@@ -89,6 +89,6 @@ window.onload = function() {
   }
 
   //Begin game
-  startGame();
+  document.getElementById("start").addEventListener('click', startGame, false);
 
 };
