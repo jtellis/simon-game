@@ -12,6 +12,12 @@ window.onload = function() {
   //The sequences elements have a value of 1-4 representing pieces
   let simonSequence = [];
 
+  let $pieces = $('.piece');
+
+  let $startButton = $('#start').prop('disabled', true);
+
+  let $difficultyButtons = $('.difficulty');
+
   let randomPiece = function() {
     return Math.floor((Math.random() * 4) + 1); //Generate rand num 1-4
   };
@@ -40,6 +46,8 @@ window.onload = function() {
           displaySimonSequence(sequence);
         });
       });
+    } else {
+      $pieces.on('click', pieceClickHandler); //enable click after Simon sequence
     }
   };
 
@@ -52,41 +60,16 @@ window.onload = function() {
   };
 
   let updateGame = function() {
-    console.log(currentMove, startInterval, activeInterval);
     if (currentMove > 2) {
       activeInterval = startInterval / Math.log(currentMove);
     } else {
       activeInterval = startInterval;
     }
     incrementSimonSequence();
+    $pieces.off('click'); //disable click during Simon sequence
     displaySimonSequence(simonSequence);
     currentMove = 0;
   };
-
-  $('.piece').on('click', function(event) {
-    let $this = $(this);
-    $this.addClass('active');
-    sleep(250).then(() => {
-      $this.removeClass('active');
-    });
-    if (currentMove < simonSequence.length) {
-      console.log($this, $this.attr('id'));
-      let thisPiece = parseInt($this.attr('id'));
-      if (correctMove(thisPiece)) {
-        console.log('Correct move');
-        currentMove += 1;
-        if (currentMove === simonSequence.length) {
-          sleep(1000).then(() => {
-            updateGame();
-          });
-        }
-      } else {
-        console.log('Game over');
-      }
-    } else {
-      updateGame();
-    }
-  });
 
   let startGame = function() {
     switch(difficulty) {
@@ -105,16 +88,36 @@ window.onload = function() {
     updateGame();
   };
 
-  let $startButton = $('#start').prop('disabled', true);
+  $startButton.on('click', startGame); //begins game
 
-  let $difficultyButtons = $('.difficulty');
   $difficultyButtons.on('click', function(event) {
     difficulty = this.value;
     $difficultyButtons.prop('disabled', true);
     $startButton.prop('disabled', false);
   });
 
-  //Begin game
-  $startButton.on('click', startGame);
+  let pieceClickHandler = function() {
+    let $this = $(this);
+    $this.addClass('active');
+    sleep(250).then(() => {
+      $this.removeClass('active');
+    });
+    if (currentMove < simonSequence.length) {
+      let thisPiece = parseInt($this.attr('id'));
+      if (correctMove(thisPiece)) {
+        currentMove += 1;
+        if (currentMove === simonSequence.length) {
+          sleep(1000).then(() => {
+            updateGame();
+          });
+        }
+      } else {
+        $difficultyButtons.prop('disabled', false);
+        $startButton.prop('disabled', false);
+      }
+    } else {
+      updateGame();
+    }
+  };
 
 };
