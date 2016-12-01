@@ -1,21 +1,16 @@
 window.onload = function() {
   'use strict';
 
-  let activeInterval = 1000;
+  const baseInterval = 1000;
+  let startInterval;
+  let activeInterval;
+
+  let difficulty;
 
   let currentMove = 0;
 
   //The sequences elements have a value of 1-4 representing pieces
   let simonSequence = [];
-
-  let pieceElements = {
-    1: document.getElementById('1'),
-    2: document.getElementById('2'),
-    3: document.getElementById('3'),
-    4: document.getElementById('4'),
-  };
-
-  let pieces = document.getElementsByClassName('piece');
 
   let randomPiece = function() {
     return Math.floor((Math.random() * 4) + 1); //Generate rand num 1-4
@@ -35,11 +30,12 @@ window.onload = function() {
 
   let displaySimonSequence = function(sequence) {
     sequence = sequence.slice(0);
-    if(sequence.length !== 0) {
+    if (sequence.length !== 0) {
       let currentPiece = sequence.shift();
-      pieceElements[currentPiece].classList.add('active');
+      let $currentPiece = $(`#${currentPiece}`);
+      $currentPiece.addClass('active');
       sleep(activeInterval).then(() => {
-        pieceElements[currentPiece].classList.remove('active');
+        $currentPiece.removeClass('active');
         sleep(100).then(() => {
           displaySimonSequence(sequence);
         });
@@ -56,39 +52,69 @@ window.onload = function() {
   };
 
   let updateGame = function() {
+    console.log(currentMove, startInterval, activeInterval);
+    if (currentMove > 2) {
+      activeInterval = startInterval / Math.log(currentMove);
+    } else {
+      activeInterval = startInterval;
+    }
     incrementSimonSequence();
     displaySimonSequence(simonSequence);
     currentMove = 0;
   };
 
-  let pieceClickHandler = function(event) {
+  $('.piece').on('click', function(event) {
+    let $this = $(this);
+    $this.addClass('active');
+    sleep(250).then(() => {
+      $this.removeClass('active');
+    });
     if (currentMove < simonSequence.length) {
-      let thisPiece = parseInt(this.id);
+      console.log($this, $this.attr('id'));
+      let thisPiece = parseInt($this.attr('id'));
       if (correctMove(thisPiece)) {
         console.log('Correct move');
         currentMove += 1;
-        if(currentMove === simonSequence.length) {
-          updateGame();
+        if (currentMove === simonSequence.length) {
+          sleep(1000).then(() => {
+            updateGame();
+          });
         }
       } else {
         console.log('Game over');
-        //TODO restart game
       }
     } else {
       updateGame();
     }
-  };
+  });
 
   let startGame = function() {
+    switch(difficulty) {
+      case 'easy':
+        startInterval = baseInterval;
+        break;
+      case 'medium':
+        startInterval = baseInterval * 0.75;
+        break;
+      case 'medium':
+        startInterval = baseInterval / 2;
+        break;
+    }
+    $startButton.prop('disabled', true);
     resetSimonSequence();
     updateGame();
   };
 
-  for (let i = 0; i < pieces.length; i++) {
-    pieces[i].addEventListener('click', pieceClickHandler, false);
-  }
+  let $startButton = $('#start').prop('disabled', true);
+
+  let $difficultyButtons = $('.difficulty');
+  $difficultyButtons.on('click', function(event) {
+    difficulty = this.value;
+    $difficultyButtons.prop('disabled', true);
+    $startButton.prop('disabled', false);
+  });
 
   //Begin game
-  document.getElementById("start").addEventListener('click', startGame, false);
+  $startButton.on('click', startGame);
 
 };

@@ -3,7 +3,7 @@
     justify-content: center;
     animation-name: fadein;
     animation-duration: 3s;
-  }
+}
 
 #board {
     display: flex;
@@ -21,16 +21,17 @@
 }
 
 .center {
-    min-height: 100px;
-    min-width: 100px;
-    top: 160px;
-    left: 160px;
+    min-height: 200px;
+    min-width: 200px;
+    top: 115px;
+    left: 115px;
     position: absolute;
     background: black;
     border-radius: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-direction: column;
 }
 
 .piece {
@@ -75,13 +76,14 @@
         opacity: 1;
     }
 }
+
 @keyframes fadein {
     from {
-      opacity: 0;
-      transform: scale(0);
+        opacity: 0;
+        transform: scale(0);
     }
     to {
-      opacity: 1;
-      transform: scale(1);
+        opacity: 1;
+        transform: scale(1);
     }
 }
