@@ -81,6 +81,7 @@ body {
     border: 1px solid black;
     margin: 5px;
     opacity: .5;
+    filter: blur(1px);
 }
 
 .piece.red {
