@@ -79,7 +79,7 @@ window.onload = function() {
       case 'medium':
         startInterval = baseInterval * 0.75;
         break;
-      case 'medium':
+      case 'hard':
         startInterval = baseInterval / 2;
         break;
     }
@@ -112,8 +112,8 @@ window.onload = function() {
           });
         }
       } else {
+        $pieces.off('click');
         $difficultyButtons.prop('disabled', false);
-        $startButton.prop('disabled', false);
       }
     } else {
       updateGame();
