@@ -1,11 +1,13 @@
 window.onload = function() {
   'use strict';
 
-  const baseInterval = 1000;
+  const baseInterval = 500;
   let startInterval;
   let activeInterval;
 
   let difficulty;
+
+  let bestScore = 0;
 
   let currentMove = 0;
 
@@ -22,13 +24,16 @@ window.onload = function() {
 
   let $buzzer = $('.sound.buzzer').get(0); //get DOM element
 
+  let $centerScore = $('.center .score');
+
   let playPieceSound = function(piece) {
     $(`.sound.beep.${piece}`).get(0).play();
   };
 
   let displayGameOver = function() {
     $sideInfo.children('.headline').text("Game Over!");
-    $sideInfo.children('.message').empty().append($('<p>Choose a difficulty, and try again!</p>'));
+    let $message = $(`<p>Choose a difficulty, and try again!<br>Your best score is <span class="score">${bestScore}</span>.</p>`);
+    $sideInfo.children('.message').empty().append($message);
   };
 
   let clearSideInfo = function() {
@@ -79,6 +84,14 @@ window.onload = function() {
   };
 
   let updateGame = function() {
+    if(currentMove > bestScore) {
+      bestScore = currentMove;
+    }
+    if(currentMove < 9) {
+      $centerScore.text(`0${currentMove}`);
+    } else {
+      $centerScore.text(currentMove);
+    }
     if (currentMove > 2) {
       activeInterval = startInterval / Math.log(currentMove);
     } else {
