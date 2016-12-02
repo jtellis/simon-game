@@ -1,5 +1,9 @@
 @import url('https://fonts.googleapis.com/css?family=Montserrat|Passion+One');
 
+body {
+  background: #F5F5F5;
+}
+
 .side-info {
   width: 420px;
   height: 420px;

@@ -18,6 +18,24 @@ window.onload = function() {
 
   let $difficultyButtons = $('.difficulty');
 
+  let $sideInfo = $('.side-info');
+
+  let $buzzer = $('.sound.buzzer').get(0); //get DOM element
+
+  let playPieceSound = function(piece) {
+    $(`.sound.beep.${piece}`).get(0).play();
+  };
+
+  let displayGameOver = function() {
+    $sideInfo.children('.headline').text("Game Over!");
+    $sideInfo.children('.message').empty().append($('<p>Choose a difficulty, and try again!</p>'));
+  };
+
+  let clearSideInfo = function() {
+    $sideInfo.children('.headline').text('Focus!');
+    $sideInfo.children('.message').empty();
+  };
+
   let randomPiece = function() {
     return Math.floor((Math.random() * 4) + 1); //Generate rand num 1-4
   };
@@ -40,6 +58,7 @@ window.onload = function() {
       let currentPiece = sequence.shift();
       let $currentPiece = $(`#${currentPiece}`);
       $currentPiece.addClass('active');
+      playPieceSound(currentPiece);
       sleep(activeInterval).then(() => {
         $currentPiece.removeClass('active');
         sleep(100).then(() => {
@@ -72,7 +91,8 @@ window.onload = function() {
   };
 
   let startGame = function() {
-    switch(difficulty) {
+    clearSideInfo();
+    switch (difficulty) {
       case 'easy':
         startInterval = baseInterval;
         break;
@@ -98,12 +118,13 @@ window.onload = function() {
 
   let pieceClickHandler = function() {
     let $this = $(this);
+    let thisPiece = parseInt($this.attr('id'));
+    playPieceSound(thisPiece);
     $this.addClass('active');
     sleep(250).then(() => {
       $this.removeClass('active');
     });
     if (currentMove < simonSequence.length) {
-      let thisPiece = parseInt($this.attr('id'));
       if (correctMove(thisPiece)) {
         currentMove += 1;
         if (currentMove === simonSequence.length) {
@@ -112,8 +133,12 @@ window.onload = function() {
           });
         }
       } else {
-        $pieces.off('click');
-        $difficultyButtons.prop('disabled', false);
+        sleep(150).then(() => { //let piece beep before buzzer
+          $buzzer.play();
+          $pieces.off('click');
+          $difficultyButtons.prop('disabled', false);
+          displayGameOver();
+        });
       }
     } else {
       updateGame();
