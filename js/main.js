@@ -2,15 +2,14 @@ window.onload = function() {
   'use strict';
 
   const baseInterval = 500;
+  const oneSecond = 1000; //milliseconds
+  const quarterSecond = oneSecond / 4;
+  const decisecond = oneSecond / 10;
   let startInterval;
   let activeInterval;
-
   let difficulty;
-
   let bestScore = 0;
-
   let currentMove = 0;
-
   //The sequences elements have a value of 1-4 representing pieces
   let simonSequence = [];
 
@@ -66,7 +65,7 @@ window.onload = function() {
       playPieceSound(currentPiece);
       sleep(activeInterval).then(() => {
         $currentPiece.removeClass('active');
-        sleep(100).then(() => {
+        sleep(decisecond).then(() => {
           displaySimonSequence(sequence);
         });
       });
@@ -134,19 +133,19 @@ window.onload = function() {
     let thisPiece = parseInt($this.attr('id'));
     playPieceSound(thisPiece);
     $this.addClass('active');
-    sleep(250).then(() => {
+    sleep(quarterSecond).then(() => {
       $this.removeClass('active');
     });
     if (currentMove < simonSequence.length) {
       if (correctMove(thisPiece)) {
         currentMove += 1;
         if (currentMove === simonSequence.length) {
-          sleep(1000).then(() => {
+          sleep(oneSecond).then(() => {
             updateGame();
           });
         }
       } else {
-        sleep(150).then(() => { //let piece beep before buzzer
+        sleep(decisecond).then(() => { //let piece beep before buzzer
           $buzzer.play();
           $pieces.off('click');
           $difficultyButtons.prop('disabled', false);
