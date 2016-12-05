@@ -1,8 +1,8 @@
 window.onload = function() {
   'use strict';
 
-  const baseInterval = 500;
-  const oneSecond = 1000; //milliseconds
+  const oneSecond = 1000; //in milliseconds
+  const baseInterval = oneSecond / 2;
   const quarterSecond = oneSecond / 4;
   const decisecond = oneSecond / 10;
   let startInterval;
@@ -13,18 +13,15 @@ window.onload = function() {
   //The sequences elements have a value of 1-4 representing pieces
   let simonSequence = [];
 
+  //jQuery objects and DOM elements
   let $pieces = $('.piece');
-
   let $startButton = $('#start').prop('disabled', true);
-
   let $difficultyButtons = $('.difficulty');
-
   let $sideInfo = $('.side-info');
-
   let $buzzer = $('.sound.buzzer').get(0); //get DOM element
-
   let $centerScore = $('.center .score');
 
+  //Helper functions and event handler callback functions
   let playPieceSound = function(piece) {
     $(`.sound.beep.${piece}`).get(0).play();
   };
@@ -52,10 +49,12 @@ window.onload = function() {
     simonSequence = [];
   };
 
+  //https://davidwalsh.name/javascript-sleep-function
   let sleep = function(interval) {
     return new Promise((resolve) => setTimeout(resolve, interval));
   };
 
+  //Note: this functions is called recursively
   let displaySimonSequence = function(sequence) {
     sequence = sequence.slice(0);
     if (sequence.length !== 0) {
@@ -66,7 +65,7 @@ window.onload = function() {
       sleep(activeInterval).then(() => {
         $currentPiece.removeClass('active');
         sleep(decisecond).then(() => {
-          displaySimonSequence(sequence);
+          displaySimonSequence(sequence); //recursive call
         });
       });
     } else {
@@ -120,14 +119,8 @@ window.onload = function() {
     updateGame();
   };
 
-  $startButton.on('click', startGame); //begins game
-
-  $difficultyButtons.on('click', function(event) {
-    difficulty = this.value;
-    $difficultyButtons.prop('disabled', true);
-    $startButton.prop('disabled', false);
-  });
-
+  //This is callback function really drives the game
+  //this is where all the "magic" happens
   let pieceClickHandler = function() {
     let $this = $(this);
     let thisPiece = parseInt($this.attr('id'));
@@ -156,5 +149,14 @@ window.onload = function() {
       updateGame();
     }
   };
+
+  //attach event handlers
+  $difficultyButtons.on('click', function(event) {
+    difficulty = this.value;
+    $difficultyButtons.prop('disabled', true);
+    $startButton.prop('disabled', false);
+  });
+
+  $startButton.on('click', startGame); //begins game
 
 };
